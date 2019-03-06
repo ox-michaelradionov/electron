@@ -181,17 +181,15 @@ void RemoveCookieOnIO(scoped_refptr<net::URLRequestContextGetter> getter,
                       util::Promise promise) {
   GetCookieStore(getter)->DeleteCookieAsync(
       url, name,
-      base::BindOnce(&util::Promise::ResolvePromise<int>, std::move(promise),
-                     base::nullopt));
+      base::BindOnce(&util::Promise::ResolvePromise, std::move(promise)));
 }
 
 // Callback of SetCookie.
 void OnSetCookie(util::Promise promise, bool success) {
   if (success)
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&util::Promise::ResolutionBinder<int>,
-                       std::move(promise), base::nullopt));
+    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
+                             base::BindOnce(&util::Promise::ResolutionBinder<>,
+                                            std::move(promise), base::nullopt));
   else
     base::PostTaskWithTraits(
         FROM_HERE, {BrowserThread::UI},
